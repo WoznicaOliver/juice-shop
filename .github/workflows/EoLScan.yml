@@ -1,0 +1,83 @@
+name: EoL Package Scan
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  issues: write
+  security-events: read
+
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Generate SBOM
+        run: |
+          gh api -H "Accept: application/vnd.github.v3+json" /repos/${{ github.repository }}/dependency-graph/sbom -q '.sbom' > sbom.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sbom
+          path: sbom.json
+
+  analyze-sbom:
+    runs-on: ubuntu-latest
+    needs: generate-sbom
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download SBOM artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: sbom
+          path: ./sbom
+
+      - name: Build Docker image
+        run: docker build -t sbom-analyzer .
+
+      - name: Run SBOM Analysis
+        run: docker run -v $(pwd)/sbom:/sbom sbom-analyzer
+
+      - name: Upload EoL Packages
+        uses: actions/upload-artifact@v2
+        with:
+          name: eol-packages
+          path: ./sbom/eol_packages.json
+
+  create-issues:
+    runs-on: ubuntu-latest
+    needs: analyze-sbom
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download EoL Packages
+        uses: actions/download-artifact@v2
+        with:
+          name: eol-packages
+          path: ./sbom
+
+      - name: Create Issues for EoL Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EOL_PACKAGES=$(cat ./sbom/eol_packages.json)
+          for row in $(echo "${EOL_PACKAGES}" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+            PACKAGE_NAME=$(_jq '.name')
+            PACKAGE_VERSION=$(_jq '.version')
+            EOL_DATE=$(_jq '.eol_date')
+            gh issue create --title "EoL Package Detected: ${PACKAGE_NAME}" --body "Package ${PACKAGE_NAME} (version ${PACKAGE_VERSION}) has reached end-of-life on ${EOL_DATE}." --labels "low priority"
+          done
