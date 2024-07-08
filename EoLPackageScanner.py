@@ -79,6 +79,15 @@ def get_all_products():
         return response.json()
     else:
         return []
+    
+def extract_major_version(version):
+    # Extract the major version (the part before the first dot)
+    return version.split('.')[0]
+
+def match_major_version(version1, version2):
+    major_version1 = extract_major_version(version1)
+    major_version2 = extract_major_version(version2)
+    return major_version1 == major_version2
 
 def check_eol_packages(sbom_file):
     with open(sbom_file, 'r') as file:
@@ -99,7 +108,7 @@ def check_eol_packages(sbom_file):
             endoflife_data = get_endoflife_data(normalized_name)
             if endoflife_data:
                 for cycle in endoflife_data:
-                    if cycle.get('eol') and cycle['eol'] < version_info:
+                    if (match_major_version(cycle.get('latest'), version_info) and cycle.get('eol')):
                         eol_packages.append({
                             "name": name,
                             "version": version_info,
