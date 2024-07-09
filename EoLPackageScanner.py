@@ -89,6 +89,14 @@ def match_major_version(version1, version2):
     major_version2 = extract_major_version(version2)
     return major_version1 == major_version2
 
+def normalize_version(version):
+    # Remove leading non-numeric characters
+    normalized_version = ''.join(c for c in version if c.isdigit() or c == '.')
+    # Ensure it starts with a digit
+    if normalized_version and not normalized_version[0].isdigit():
+        normalized_version = normalized_version[1:]
+    return normalized_version
+
 def check_eol_packages(sbom_file):
     with open(sbom_file, 'r') as file:
         sbom_data = json.load(file)
@@ -100,6 +108,7 @@ def check_eol_packages(sbom_file):
     for package in packages:
         name = package.get('name')
         version_info = package.get('versionInfo')
+        version_info = normalize_version(version_info)
         if not name or not version_info:
             continue
 
