@@ -79,5 +79,5 @@ jobs:
             PACKAGE_NAME=$(_jq '.name')
             PACKAGE_VERSION=$(_jq '.version')
             EOL_DATE=$(_jq '.eol_date')
-            gh issue create --title "EoL Package Detected: ${PACKAGE_NAME}" --body "Package ${PACKAGE_NAME} (version ${PACKAGE_VERSION}) has reached end-of-life on ${EOL_DATE}." -l "low priority"
+            gh issue create --title "EoL Package Detected: ${PACKAGE_NAME}" --body "Package ${PACKAGE_NAME} (version ${PACKAGE_VERSION}) has reached end-of-life on ${EOL_DATE}. Source: https://endoflife.date/" -l "low priority"
           done
