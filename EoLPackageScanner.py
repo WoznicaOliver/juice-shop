@@ -448,8 +448,7 @@ def get_eol_status(sbom):
                     "name": package.get('name'),
                     "version": package.get('versionInfo'),
                     "eol_date": cycle['eol'],
-                    "priority": priority,
-                    "details": cycle['details']
+                    "priority": priority
                 })
     
     return eol_packages
