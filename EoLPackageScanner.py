@@ -1,5 +1,6 @@
 import json
 import requests
+from datetime import datetime, timedelta
 
 # Package mapping dictionary
 package_mapping = {
@@ -29,6 +30,10 @@ package_mapping = {
     "npm:rxjs": "rxjs",
     "npm:next": "nextjs",
     "npm:gatsby": "gatsby",
+
+    # React packages
+    "npm:react": "react",
+    "npm:react-dom": "react",
     
     # .NET Packages
     "nuget:Microsoft.AspNetCore.App": "aspnetcore",
@@ -55,7 +60,325 @@ package_mapping = {
     "nuget:Microsoft.Extensions.DependencyInjection": "microsoft-extensions-dependencyinjection",
     "nuget:Microsoft.AspNetCore.Authentication.JwtBearer": "aspnetcore-authentication-jwtbearer",
     "nuget:Microsoft.AspNetCore.Mvc": "aspnetcore-mvc",
-    "nuget:Microsoft.AspNetCore.Http": "aspnetcore-http"
+    "nuget:Microsoft.AspNetCore.Http": "aspnetcore-http",
+
+    # Other products tracked on endoflife.date
+    "akeneo-pim": "akeneo-pim",
+    "alibaba-dragonwell": "alibaba-dragonwell",
+    "almalinux": "almalinux",
+    "alpine": "alpine",
+    "amazon-cdk": "amazon-cdk",
+    "amazon-corretto": "amazon-corretto",
+    "amazon-eks": "amazon-eks",
+    "amazon-glue": "amazon-glue",
+    "amazon-linux": "amazon-linux",
+    "amazon-neptune": "amazon-neptune",
+    "amazon-rds-mysql": "amazon-rds-mysql",
+    "amazon-rds-postgresql": "amazon-rds-postgresql",
+    "android": "android",
+    "angularjs": "angularjs",
+    "ansible": "ansible",
+    "ansible-core": "ansible-core",
+    "antix": "antix",
+    "apache": "apache",
+    "apache-activemq": "apache-activemq",
+    "apache-airflow": "apache-airflow",
+    "apache-camel": "apache-camel",
+    "apache-cassandra": "apache-cassandra",
+    "apache-flink": "apache-flink",
+    "apache-groovy": "apache-groovy",
+    "apache-hadoop": "apache-hadoop",
+    "apache-hop": "apache-hop",
+    "apache-kafka": "apache-kafka",
+    "apache-lucene": "apache-lucene",
+    "apache-spark": "apache-spark",
+    "apache-struts": "apache-struts",
+    "api-platform": "api-platform",
+    "apple-watch": "apple-watch",
+    "arangodb": "arangodb",
+    "argo-cd": "argo-cd",
+    "artifactory": "artifactory",
+    "aws-lambda": "aws-lambda",
+    "azul-zulu": "azul-zulu",
+    "azure-devops-server": "azure-devops-server",
+    "azure-kubernetes-service": "azure-kubernetes-service",
+    "bazel": "bazel",
+    "beats": "beats",
+    "bellsoft-liberica": "bellsoft-liberica",
+    "blender": "blender",
+    "bootstrap": "bootstrap",
+    "bun": "bun",
+    "cakephp": "cakephp",
+    "calico": "calico",
+    "centos": "centos",
+    "centos-stream": "centos-stream",
+    "centreon": "centreon",
+    "cert-manager": "cert-manager",
+    "cfengine": "cfengine",
+    "chef-infra-server": "chef-infra-server",
+    "citrix-vad": "citrix-vad",
+    "ckeditor": "ckeditor",
+    "clamav": "clamav",
+    "cockroachdb": "cockroachdb",
+    "coldfusion": "coldfusion",
+    "composer": "composer",
+    "confluence": "confluence",
+    "consul": "consul",
+    "containerd": "containerd",
+    "contao": "contao",
+    "contour": "contour",
+    "cortex-xdr": "cortex-xdr",
+    "cos": "cos",
+    "couchbase-server": "couchbase-server",
+    "craft-cms": "craft-cms",
+    "dbt-core": "dbt-core",
+    "dce": "dce",
+    "debian": "debian",
+    "dependency-track": "dependency-track",
+    "devuan": "devuan",
+    "django": "django",
+    "docker-engine": "docker-engine",
+    "dotnet": "dotnet",
+    "dotnetfx": "dotnetfx",
+    "drupal": "drupal",
+    "drush": "drush",
+    "eclipse-jetty": "eclipse-jetty",
+    "eclipse-temurin": "eclipse-temurin",
+    "elasticsearch": "elasticsearch",
+    "electron": "electron",
+    "elixir": "elixir",
+    "emberjs": "emberjs",
+    "envoy": "envoy",
+    "erlang": "erlang",
+    "esxi": "esxi",
+    "etcd": "etcd",
+    "eurolinux": "eurolinux",
+    "exim": "exim",
+    "fairphone": "fairphone",
+    "fedora": "fedora",
+    "ffmpeg": "ffmpeg",
+    "filemaker": "filemaker",
+    "firefox": "firefox",
+    "fluent-bit": "fluent-bit",
+    "flux": "flux",
+    "fortios": "fortios",
+    "freebsd": "freebsd",
+    "gerrit": "gerrit",
+    "gitlab": "gitlab",
+    "go": "go",
+    "goaccess": "goaccess",
+    "godot": "godot",
+    "google-kubernetes-engine": "google-kubernetes-engine",
+    "google-nexus": "google-nexus",
+    "gorilla": "gorilla",
+    "graalvm": "graalvm",
+    "gradle": "gradle",
+    "grafana": "grafana",
+    "grails": "grails",
+    "graylog": "graylog",
+    "gstreamer": "gstreamer",
+    "haproxy": "haproxy",
+    "harbor": "harbor",
+    "hashicorp-vault": "hashicorp-vault",
+    "hbase": "hbase",
+    "horizon": "horizon",
+    "ibm-aix": "ibm-aix",
+    "ibm-i": "ibm-i",
+    "ibm-semeru-runtime": "ibm-semeru-runtime",
+    "icinga-web": "icinga-web",
+    "intel-processors": "intel-processors",
+    "internet-explorer": "internet-explorer",
+    "ionic": "ionic",
+    "ios": "ios",
+    "ipad": "ipad",
+    "ipados": "ipados",
+    "iphone": "iphone",
+    "isc-dhcp": "isc-dhcp",
+    "istio": "istio",
+    "jekyll": "jekyll",
+    "jenkins": "jenkins",
+    "jhipster": "jhipster",
+    "jira-software": "jira-software",
+    "joomla": "joomla",
+    "jquery": "jquery",
+    "jreleaser": "jreleaser",
+    "kde-plasma": "kde-plasma",
+    "keda": "keda",
+    "keycloak": "keycloak",
+    "kibana": "kibana",
+    "kindle": "kindle",
+    "kirby": "kirby",
+    "kong-gateway": "kong-gateway",
+    "kotlin": "kotlin",
+    "kubernetes": "kubernetes",
+    "kubernetes-csi-node-driver-registrar": "kubernetes-csi-node-driver-registrar",
+    "kubernetes-node-feature-discovery": "kubernetes-node-feature-discovery",
+    "kyverno": "kyverno",
+    "laravel": "laravel",
+    "libreoffice": "libreoffice",
+    "lineageos": "lineageos",
+    "linux": "linux",
+    "linuxmint": "linuxmint",
+    "log4j": "log4j",
+    "logstash": "logstash",
+    "looker": "looker",
+    "lua": "lua",
+    "macos": "macos",
+    "mageia": "mageia",
+    "magento": "magento",
+    "mariadb": "mariadb",
+    "mastodon": "mastodon",
+    "matomo": "matomo",
+    "mattermost": "mattermost",
+    "maven": "maven",
+    "mediawiki": "mediawiki",
+    "meilisearch": "meilisearch",
+    "memcached": "memcached",
+    "micronaut": "micronaut",
+    "microsoft-build-of-openjdk": "microsoft-build-of-openjdk",
+    "mongodb": "mongodb",
+    "moodle": "moodle",
+    "motorola-mobility": "motorola-mobility",
+    "msexchange": "msexchange",
+    "mssqlserver": "mssqlserver",
+    "mulesoft-runtime": "mulesoft-runtime",
+    "mxlinux": "mxlinux",
+    "mysql": "mysql",
+    "neo4j": "neo4j",
+    "neos": "neos",
+    "netbsd": "netbsd",
+    "nextcloud": "nextcloud",
+    "nextjs": "nextjs",
+    "nexus": "nexus",
+    "nginx": "nginx",
+    "nix": "nix",
+    "nixos": "nixos",
+    "nodejs": "nodejs",
+    "nokia": "nokia",
+    "nomad": "nomad",
+    "numpy": "numpy",
+    "nutanix-aos": "nutanix-aos",
+    "nutanix-files": "nutanix-files",
+    "nutanix-prism": "nutanix-prism",
+    "nuxt": "nuxt",
+    "nvidia": "nvidia",
+    "nvidia-gpu": "nvidia-gpu",
+    "office": "office",
+    "openbsd": "openbsd",
+    "openjdk-builds-from-oracle": "openjdk-builds-from-oracle",
+    "opensearch": "opensearch",
+    "openssl": "openssl",
+    "opensuse": "opensuse",
+    "opentofu": "opentofu",
+    "openwrt": "openwrt",
+    "openzfs": "openzfs",
+    "opnsense": "opnsense",
+    "oracle-apex": "oracle-apex",
+    "oracle-database": "oracle-database",
+    "oracle-jdk": "oracle-jdk",
+    "oracle-linux": "oracle-linux",
+    "oracle-solaris": "oracle-solaris",
+    "ovirt": "ovirt",
+    "pangp": "pangp",
+    "panos": "panos",
+    "pci-dss": "pci-dss",
+    "perl": "perl",
+    "photon": "photon",
+    "php": "php",
+    "phpbb": "phpbb",
+    "phpmyadmin": "phpmyadmin",
+    "pixel": "pixel",
+    "plesk": "plesk",
+    "pop-os": "pop-os",
+    "postfix": "postfix",
+    "postgresql": "postgresql",
+    "postmarketos": "postmarketos",
+    "powershell": "powershell",
+    "prometheus": "prometheus",
+    "protractor": "protractor",
+    "proxmox-ve": "proxmox-ve",
+    "puppet": "puppet",
+    "python": "python",
+    "qt": "qt",
+    "quarkus-framework": "quarkus-framework",
+    "quasar": "quasar",
+    "rabbitmq": "rabbitmq",
+    "rails": "rails",
+    "rancher": "rancher",
+    "raspberry-pi": "raspberry-pi",
+    "readynas": "readynas",
+    "red-hat-openshift": "red-hat-openshift",
+    "redhat-build-of-openjdk": "redhat-build-of-openjdk",
+    "redhat-jboss-eap": "redhat-jboss-eap",
+    "redhat-satellite": "redhat-satellite",
+    "redis": "redis",
+    "redmine": "redmine",
+    "rhel": "rhel",
+    "robo": "robo",
+    "rocket-chat": "rocket-chat",
+    "rocky-linux": "rocky-linux",
+    "ros": "ros",
+    "ros-2": "ros-2",
+    "roundcube": "roundcube",
+    "ruby": "ruby",
+    "rust": "rust",
+    "salt": "salt",
+    "samsung-mobile": "samsung-mobile",
+    "sapmachine": "sapmachine",
+    "scala": "scala",
+    "sharepoint": "sharepoint",
+    "shopware": "shopware",
+    "silverstripe": "silverstripe",
+    "slackware": "slackware",
+    "sles": "sles",
+    "solr": "solr",
+    "sonar": "sonar",
+    "sourcegraph": "sourcegraph",
+    "splunk": "splunk",
+    "spring-boot": "spring-boot",
+    "spring-framework": "spring-framework",
+    "sqlite": "sqlite",
+    "squid": "squid",
+    "steamos": "steamos",
+    "surface": "surface",
+    "symfony": "symfony",
+    "tails": "tails",
+    "tarantool": "tarantool",
+    "telegraf": "telegraf",
+    "terraform": "terraform",
+    "tomcat": "tomcat",
+    "traefik": "traefik",
+    "twig": "twig",
+    "typo3": "typo3",
+    "ubuntu": "ubuntu",
+    "umbraco": "umbraco",
+    "unity": "unity",
+    "unrealircd": "unrealircd",
+    "varnish": "varnish",
+    "vcenter": "vcenter",
+    "veeam-backup-and-replication": "veeam-backup-and-replication",
+    "visual-cobol": "visual-cobol",
+    "visual-studio": "visual-studio",
+    "vmware-cloud-foundation": "vmware-cloud-foundation",
+    "vmware-harbor-registry": "vmware-harbor-registry",
+    "vmware-srm": "vmware-srm",
+    "vue": "vue",
+    "vuetify": "vuetify",
+    "wagtail": "wagtail",
+    "watchos": "watchos",
+    "weechat": "weechat",
+    "windows": "windows",
+    "windows-embedded": "windows-embedded",
+    "windows-nano-server": "windows-nano-server",
+    "windows-server": "windows-server",
+    "windows-server-core": "windows-server-core",
+    "wordpress": "wordpress",
+    "xcp-ng": "xcp-ng",
+    "yarn": "yarn",
+    "yocto": "yocto",
+    "zabbix": "zabbix",
+    "zerto": "zerto",
+    "zookeeper": "zookeeper"
 }
 
 def normalize_package_name(name):
@@ -97,39 +420,43 @@ def normalize_version(version):
         normalized_version = normalized_version[1:]
     return normalized_version
 
-def check_eol_packages(sbom_file):
-    with open(sbom_file, 'r') as file:
-        sbom_data = json.load(file)
-
-    packages = sbom_data.get('packages', [])
+def get_eol_status(sbom):
+    with open(sbom, 'r') as f:
+        data = json.load(f)
+    
+    packages = data.get('packages', [])
+    all_products = get_all_products()
+    product_names = {normalize_package_name(product) for product in all_products}
+    
     eol_packages = []
-    valid_products = get_all_products()
 
     for package in packages:
-        name = package.get('name')
-        version_info = package.get('versionInfo')
-        version_info = normalize_version(version_info)
-        if not name or not version_info:
-            continue
+        normalized_name = normalize_package_name(package.get('name'))
+        if normalized_name in product_names:
+            eol_data = get_endoflife_data(normalized_name)
+            for cycle in eol_data:
+                eol_date = datetime.strptime(cycle['eol'], '%Y-%m-%d')
+                current_date = datetime.now()
+                if eol_date < current_date:
+                    priority = 'medium'
+                elif eol_date < current_date + timedelta(days=60):
+                    priority = 'low'
+                else:
+                    continue
 
-        normalized_name = normalize_package_name(name)
-        if normalized_name in valid_products:
-            endoflife_data = get_endoflife_data(normalized_name)
-            if endoflife_data:
-                for cycle in endoflife_data:
-                    if (match_major_version(cycle.get('latest'), version_info) and cycle.get('eol')):
-                        eol_packages.append({
-                            "name": name,
-                            "version": version_info,
-                            "eol_date": cycle['eol'],
-                        })
-                        break
-
+                eol_packages.append({
+                    "name": package.get('name'),
+                    "version": package.get('versionInfo'),
+                    "eol_date": cycle['eol'],
+                    "priority": priority,
+                    "details": cycle['details']
+                })
+    
     return eol_packages
 
 if __name__ == "__main__":
     import sys
-    sbom_file = sys.argv[1]
-    eol_packages = check_eol_packages(sbom_file)
-    with open('/sbom/eol_packages.json', 'w') as file:
-        json.dump(eol_packages, file)
+    sbom = sys.argv[1]
+    eol_packages = get_eol_status(sbom)
+    with open('eol_results.json', 'w') as f:
+        json.dump(eol_packages, f, indent=4)
