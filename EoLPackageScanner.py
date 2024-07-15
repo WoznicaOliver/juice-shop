@@ -457,5 +457,5 @@ if __name__ == "__main__":
     import sys
     sbom = sys.argv[1]
     eol_packages = get_eol_status(sbom)
-    with open('eol_packages.json', 'w') as f:
-        json.dump(eol-packages, f, indent=4)
+    with open('eol-packages.json', 'w') as f:
+        json.dump(eol_packages, f, indent=4)
