@@ -434,13 +434,16 @@ def get_eol_status(sbom):
         normalized_name = normalize_package_name(package.get('name'))
         if normalized_name in product_names:
             eol_data = get_endoflife_data(normalized_name)
+            breakout = False
             for cycle in eol_data:
                 eol_date = datetime.strptime(cycle['eol'], '%Y-%m-%d')
                 current_date = datetime.now()
-                if eol_date < current_date:
+                if (eol_date < current_date) and breakout == False:
                     priority = 'medium'
-                elif eol_date < current_date + timedelta(days=60):
+                    breakout = True
+                elif (eol_date < current_date + timedelta(days=60)) and breakout == False:
                     priority = 'low'
+                    breakout = True
                 else:
                     continue
 
